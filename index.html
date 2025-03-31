@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Mastery</title>
+<link rel="icon" href="icon.svg" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            transition: background 0.5s ease;
+        }
+
+        header {
+            background-color: rgba(44, 62, 80, 0.85);
+            padding: 25px;
+            width: 90%;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #1abc9c;
+            margin: 0;
+        }
+
+        #game-container {
+            text-align: center;
+            background-color: rgba(52, 152, 219, 0.85);
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 85%;
+            max-width: 700px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        button {
+            padding: 14px 30px;
+            margin: 12px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #16a085, #1abc9c);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            font-size: 18px;
+            margin: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            width: 90px;
+            text-align: center;
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #95a5a6;
+            padding: 20px;
+            width: 100%;
+            background-color: rgba(44, 62, 80, 0.85);
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1abc9c;
+        }
+
+        .go-back-button {
+            background-color: #e74c3c;
+            color: white;
+            animation: pulse 2s infinite;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .go-back-button:hover {
+            background-color: #c0392b;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Math Mastery</h1>
+    </header>
+
+    <div id="game-container">
+        <div id="game-selection">
+            <button onclick="startGame('addition')">Addition</button>
+            <button onclick="startGame('subtraction')">Subtraction</button>
+            <button onclick="startGame('multiplication')">Multiplication</button>
+            <button onclick="startGame('division')">Division</button>
+            <button onclick="startGame('square')">Square</button>
+            <button onclick="startGame('percentage')">Percentage</button>
+            <button onclick="startGame('table')">Table</button>
+        </div>
+        <div id="game-settings" style="display: none;"></div>
+        <div id="game-area" style="display: none;">
+            <p id="question"></p>
+            <input type="number" id="answer" oninput="checkAnswer()">
+            <p id="result"></p>
+            <button class="go-back-button" onclick="goBack()">Go Back</button>
+        </div>
+        <div id="game-over" style="display: none;">
+            <h2>Game Over!</h2>
+            <p id="final-score"></p>
+            <p id="time-taken"></p>
+            <p id="accuracy"></p>
+            <button class="go-back-button" onclick="goBack()">Go Back</button>
+        </div>
+    </div>
+    <footer>
+        <p>Created with passion by Shiv</p>
+        <p>Sharpen Your Skills with Ease</p>
+    </footer>
+
+    <script>
+        let selectedGame;
+        let settings = {};
+        let questions = [];
+        let answers = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let incorrectCounts = [];
+        let startTime;
+        let endTime;
+        let check_inp_try = 0;
+        let lastQuestionIndex = -1;
+        let realCorrect = 0;
+
+        function goBack() {
+            if (confirm("Are you sure you want to exit?")) {
+                document.getElementById('game-selection').style.display = 'block';
+                document.getElementById('game-settings').style.display = 'none';
+                document.getElementById('game-area').style.display = 'none';
+                document.getElementById('game-over').style.display = 'none';
+                selectedGame = null;
+                settings = {};
+                questions = [];
+                answers = [];
+                score = 0;
+            }
+        }
+
+        function startGame(gameType) {
+            selectedGame = gameType;
+            document.getElementById('game-selection').style.display = 'none';
+            document.getElementById('game-settings').style.display = 'block';
+            generateSettingsInputs();
+        }
+
+        function generateSettingsInputs() {
+            let settingsDiv = document.getElementById('game-settings');
+            settingsDiv.innerHTML = '';
+
+            let rangeMinInput, rangeMaxInput, countInput, tableInput, percentageInput, quantityInput, powerInput;
+
+            switch (selectedGame) {
+                case 'addition':
+                    rangeMinInput = `<label>Range Min: <input type="number" id="rangeMin" value="1"></label><br>`;
+                    rangeMaxInput = `<label>Range Max: <input type="number" id="rangeMax" value="10"></label><br>`;
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    quantityInput = `<label>Quantity of Numbers: <input type="number" id="quantity" value="2"></label><br>`;
+                    settingsDiv.innerHTML = rangeMinInput + rangeMaxInput + countInput + quantityInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+                case 'subtraction':
+                    rangeMinInput = `<label>Range Min: <input type="number" id="rangeMin" value="100"></label><br>`;
+                    rangeMaxInput = `<label>Range Max: <input type="number" id="rangeMax" value="200"></label><br>`;
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    settingsDiv.innerHTML = rangeMinInput + rangeMaxInput + countInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+                case 'multiplication':
+                case 'division':
+                    rangeMinInput = `<label>Range Min: <input type="number" id="rangeMin" value="1"></label><br>`;
+                    rangeMaxInput = `<label>Range Max: <input type="number" id="rangeMax" value="10"></label><br>`;
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    settingsDiv.innerHTML = rangeMinInput + rangeMaxInput + countInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+                case 'square':
+                    rangeMinInput = `<label>Range Min: <input type="number" id="rangeMin" value="1"></label><br>`;
+                    rangeMaxInput = `<label>Range Max: <input type="number" id="rangeMax" value="10"></label><br>`;
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    powerInput = `<label>Power : <select id="power"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label><br>`;
+                    settingsDiv.innerHTML = rangeMinInput + rangeMaxInput + countInput + powerInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+                case 'percentage':
+                    rangeMinInput = `<label>Range Min: <input type="number" id="rangeMin" value="1"></label><br>`;
+                    rangeMaxInput = `<label>Range Max: <input type="number" id="rangeMax" value="100"></label><br>`;
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    percentageInput = `<label>Percentage Complexity: <select id="percentageComplexity"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option><option value="expert">Expert</option></select></label><br>`;
+                    settingsDiv.innerHTML = rangeMinInput + rangeMaxInput + countInput + percentageInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+                case 'table':
+                    countInput = `<label>Number of Questions: <input type="number" id="count" value="10"></label><br>`;
+                    let tableRange = `<label>Table Ranges: <br>
+                                        <input type="checkbox" id="tableRange1" name="tableRange" value="10"><label for="tableRange1">1-10</label><br>
+                                        <input type="checkbox" id="tableRange2" name="tableRange" value="20"><label for="tableRange2">11-20</label><br>
+                                        <input type="checkbox" id="tableRange3" name="tableRange" value="30"><label for="tableRange3">21-30</label><br>
+                                        <input type="checkbox" id="tableRange4" name="tableRange" value="40"><label for="tableRange4">31-40</label><br>
+                                        <input type="checkbox" id="tableRange5" name="tableRange" value="50"><label for="tableRange5">41-50</label><br>
+                                    </label><br>`;
+                    settingsDiv.innerHTML = tableRange + countInput + `<button onclick="startActualGame()">Start</button><button onclick="goBack()">Go Back</button>`;
+                    break;
+            }
+        }
+
+        function startActualGame() {
+            document.getElementById('game-settings').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+
+            if (selectedGame === 'table') {
+                settings.tableRanges = Array.from(document.querySelectorAll('input[name="tableRange"]:checked')).map(el => parseInt(el.value));
+            } else {
+                settings.rangeMin = parseInt(document.getElementById('rangeMin').value);
+                settings.rangeMax = parseInt(document.getElementById('rangeMax').value);
+            }
+            settings.count = parseInt(document.getElementById('count').value);
+            if (selectedGame === 'addition') {
+                settings.quantity = parseInt(document.getElementById('quantity').value);
+            }
+            if (selectedGame === 'square') {
+                settings.power = parseInt(document.getElementById('power').value);
+            }
+            if(selectedGame === 'percentage'){
+                settings.percentageComplexity = document.getElementById('percentageComplexity').value;
+            }
+
+            generateQuestions();
+            displayQuestion();
+            startTime = new Date();
+        }
+
+        function generateQuestions() {
+            questions = [];
+            answers = [];
+            realCorrect = 0;
+            lastQuestionIndex = -1;
+            for (let i = 0; i < settings.count; i++) {
+                let num1, num2, result;
+                switch (selectedGame) {
+                    case 'addition':
+                        let nums = [];
+                        let questionString = "";
+                        result = 0;
+                        for (let j = 0; j < settings.quantity; j++) {
+                            let num = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                            nums.push(num);
+                            result += num;
+                            questionString += num;
+                            if (j < settings.quantity - 1) {
+                                questionString += " + ";
+                            }
+                        }
+                        questions.push(questionString + " = ?");
+                        answers.push(result);
+                        break;
+                    case 'subtraction':
+                        num1 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        num2 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        if (num2 > num1) [num1, num2] = [num2, num1];
+                        result = num1 - num2;
+                        questions.push(`${num1} - ${num2} = ?`);
+                        answers.push(result);
+                        break;
+                    case 'multiplication':
+                        num1 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        num2 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        result = num1 * num2;
+                        questions.push(`${num1} * ${num2} = ?`);
+                        answers.push(result);
+                        break;
+                    case 'division':
+                        num2 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        result = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        num1 = num2 * result;
+                        questions.push(`${num1} / ${num2} = ?`);
+                        answers.push(result);
+                        break;
+                    case 'square':
+                        num1 = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        num2 = Math.floor(Math.random() * 30) + 1;
+                        result = Math.pow(num1, settings.power) + num2;
+                        questions.push(`${num1}^${settings.power} + ${num2} = ?`);
+                        answers.push(result);
+                        break;
+                    case 'percentage':
+                        let percentage;
+                        switch (settings.percentageComplexity) {
+                            case 'easy':
+                                percentage = Math.floor(Math.random() * 20) * 5;
+                                break;
+                            case 'medium':
+                                percentage = Math.floor(Math.random() * 95) + 1;
+                                while (percentage % 5 === 0) {
+                                    percentage = Math.floor(Math.random() * 95) + 1;
+                                }
+                                break;
+                            case 'hard':
+                                percentage = (Math.random() * 99 + 1).toFixed(1);
+                                break;
+                            case 'expert':
+                                percentage = (Math.random() * 99 + 1).toFixed(2);
+                                break;
+                        }
+                        let total = Math.floor(Math.random() * (settings.rangeMax - settings.rangeMin + 1)) + settings.rangeMin;
+                        result = (percentage / 100) * total;
+                        questions.push(`${percentage}% of ${total} = ?`);
+                        answers.push(parseFloat(result.toFixed(2)));
+                        break;
+                    case 'table':
+                        if (settings.tableRanges && settings.tableRanges.length > 0) {
+                            let selectedRange = settings.tableRanges[Math.floor(Math.random() * settings.tableRanges.length)];
+                            let rangeStart = 1;
+                            let rangeEnd = 10;
+                            switch (selectedRange) {
+                                case 20: rangeStart = 11; rangeEnd = 20; break;
+                                case 30: rangeStart = 21; rangeEnd = 30; break;
+                                case 40: rangeStart = 31; rangeEnd = 40; break;
+                                case 50: rangeStart = 41; rangeEnd = 50; break;
+                            }
+                            settings.tableNum = Math.floor(Math.random() * (rangeEnd - rangeStart + 1)) + rangeStart;
+                            num2 = Math.floor(Math.random() * 10) + 1;
+                            result = settings.tableNum * num2;
+                            questions.push(`${settings.tableNum} x ${num2} = ?`);
+                            answers.push(result);
+                        }
+                        break;
+                }
+            }
+        }
+
+        function displayQuestion() {
+            document.getElementById('question').textContent = questions[currentQuestionIndex];
+            document.getElementById('answer').value = '';
+            document.getElementById('result').textContent = "";
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseFloat(document.getElementById('answer').value);
+            if (userAnswer === answers[currentQuestionIndex]) {
+                document.getElementById('result').textContent = 'Correct!';
+                document.getElementById('result').style.color = "green";
+                score++;
+                if (currentQuestionIndex != lastQuestionIndex) {
+                    lastQuestionIndex = currentQuestionIndex;
+                    realCorrect++;
+                }
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion();
+                } else {
+                    endGame();
+                }
+            } else if (!isNaN(userAnswer) && userAnswer > answers[currentQuestionIndex]) {
+                document.getElementById('result').textContent = 'Incorrect!';
+                document.getElementById('result').style.color = "red";
+                if (currentQuestionIndex != lastQuestionIndex) {
+                    lastQuestionIndex = currentQuestionIndex;
+                }
+                setTimeout(() => {
+                    document.getElementById('answer').value = '';
+                }, 300);
+            } else if (!isNaN(userAnswer)) {
+                document.getElementById('result').textContent = "";
+            }
+        }
+
+        function endGame() {
+            endTime = new Date();
+            currentQuestionIndex = 0;
+            let timeDiff = (endTime - startTime) / 1000;
+            let accuracy = (realCorrect / questions.length) * 100;
+
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('final-score').textContent = `Your Score: ${realCorrect} / ${questions.length}`;
+            document.getElementById('time-taken').textContent = `Time Taken: ${timeDiff.toFixed(2)} seconds`;
+            document.getElementById('accuracy').textContent = `Accuracy: ${accuracy.toFixed(2)}% `;
+        }
+    </script>
+</body>
+</html>
