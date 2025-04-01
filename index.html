@@ -274,6 +274,7 @@
         }
 
        function startActualGame() {
+           currentQuestionIndex = 0;
     if (selectedGame === 'table') {
         const checkedRanges = Array.from(document.querySelectorAll('input[name="tableRange"]:checked'));
         if (checkedRanges.length === 0) {
