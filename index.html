@@ -273,31 +273,37 @@
             }
         }
 
-        function startActualGame() {
-            document.getElementById('game-settings').style.display = 'none';
-            document.getElementById('game-area').style.display = 'block';
-
-            if (selectedGame === 'table') {
-                settings.tableRanges = Array.from(document.querySelectorAll('input[name="tableRange"]:checked')).map(el => parseInt(el.value));
-            } else {
-                settings.rangeMin = parseInt(document.getElementById('rangeMin').value);
-                settings.rangeMax = parseInt(document.getElementById('rangeMax').value);
-            }
-            settings.count = parseInt(document.getElementById('count').value);
-            if (selectedGame === 'addition') {
-                settings.quantity = parseInt(document.getElementById('quantity').value);
-            }
-            if (selectedGame === 'square') {
-                settings.power = parseInt(document.getElementById('power').value);
-            }
-            if(selectedGame === 'percentage'){
-                settings.percentageComplexity = document.getElementById('percentageComplexity').value;
-            }
-
-            generateQuestions();
-            displayQuestion();
-            startTime = new Date();
+       function startActualGame() {
+    if (selectedGame === 'table') {
+        const checkedRanges = Array.from(document.querySelectorAll('input[name="tableRange"]:checked'));
+        if (checkedRanges.length === 0) {
+            alert("Please select at least one table range to continue.");
+            return;
         }
+        settings.tableRanges = checkedRanges.map(el => parseInt(el.value));
+    } else {
+        settings.rangeMin = parseInt(document.getElementById('rangeMin').value);
+        settings.rangeMax = parseInt(document.getElementById('rangeMax').value);
+    }
+    settings.count = parseInt(document.getElementById('count').value);
+    if (selectedGame === 'addition') {
+        settings.quantity = parseInt(document.getElementById('quantity').value);
+    }
+    if (selectedGame === 'square') {
+        settings.power = parseInt(document.getElementById('power').value);
+    }
+    if(selectedGame === 'percentage'){
+        settings.percentageComplexity = document.getElementById('percentageComplexity').value;
+    }
+
+    document.getElementById('game-settings').style.display = 'none';
+    document.getElementById('game-area').style.display = 'block';
+
+    generateQuestions();
+    displayQuestion();
+    startTime = new Date();
+}
+          
 
         function generateQuestions() {
             questions = [];
