@@ -172,6 +172,7 @@
             <h2>Game Over!</h2>
             <p id="final-score"></p>
             <p id="time-taken"></p>
+            <p id="average"></p>
             <p id="accuracy"></p>
             <button class="go-back-button" onclick="goBack()">Go Back</button>
         </div>
@@ -441,17 +442,20 @@
             }
         }
 
-        function endGame() {
+       function endGame() {
             endTime = new Date();
             currentQuestionIndex = 0;
             let timeDiff = (endTime - startTime) / 1000;
             let accuracy = (realCorrect / questions.length) * 100;
-
+	    let average=timeDiff/questions.length;
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('game-over').style.display = 'block';
             document.getElementById('final-score').textContent = `Your Score: ${realCorrect} / ${questions.length}`;
-            document.getElementById('time-taken').textContent = `Time Taken: ${timeDiff.toFixed(2)} seconds`;
-            document.getElementById('accuracy').textContent = `Accuracy: ${accuracy.toFixed(2)}% `;
+            document.getElementById('time-taken').textContent = `Time Taken: ${(timeDiff / 60).toFixed(0)} minutes ${(timeDiff % 60).toFixed(0)} sec`;
+
+	 document.getElementById('average').textContent = `Average Time: ${average.toFixed(2)}sec `;
+  
+            document.getElementById('accuracy').textContent = `Accuracy: ${accuracy.toFixed(2)}sec `;
         }
     </script>
 </body>
